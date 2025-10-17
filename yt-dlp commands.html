@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم أوامر التنزيل الذكية v3</title>
+    <style>
+        :root {
+            --bg-color: #1a1b26;
+            --main-color: #a9b1d6;
+            --card-bg: #24283b;
+            --card-border: #414868;
+            --header-bg: #1f2335;
+            --accent-color: #7aa2f7;
+            --green-color: #9ece6a;
+            --pink-color: #ff79c6;
+            --yellow-color: #e0af68;
+            --orange-color: #ff9e64;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--main-color);
+            margin: 0;
+            padding: 2rem;
+            line-height: 1.8;
+            font-size: 16px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            color: var(--accent-color);
+            border-bottom: 2px solid var(--card-border);
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        h2 {
+            font-size: 1.8rem;
+            margin-top: 2.5rem;
+            color: var(--orange-color);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        p, li {
+            font-size: 1.1rem;
+        }
+        
+        a {
+            color: var(--pink-color);
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* --- نظام التبويبات (Tabs) --- */
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid var(--card-border);
+            margin-bottom: 2rem;
+        }
+
+        .tab-button {
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            background-color: transparent;
+            border: none;
+            color: var(--main-color);
+            font-family: 'Tajawal', sans-serif;
+            font-size: 1.2rem;
+            font-weight: bold;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .tab-button::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--accent-color);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .tab-button.active {
+            color: var(--accent-color);
+        }
+
+        .tab-button.active::after {
+            transform: scaleX(1);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+
+        /* --- تصميم صندوق الكود --- */
+        .code-block {
+            background-color: var(--header-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .code-block-header {
+            background-color: var(--card-bg);
+            padding: 12px 15px;
+            font-weight: bold;
+            border-bottom: 1px solid var(--card-border);
+            color: var(--yellow-color);
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 1.5rem;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .code-block code {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1rem;
+            color: var(--main-color);
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            left: 15px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            opacity: 0.8;
+            transition: all 0.2s ease;
+        }
+
+        .copy-btn:hover {
+            opacity: 1;
+            transform: scale(1.05);
+        }
+
+        .copy-btn.copied {
+            background-color: var(--green-color);
+        }
+
+        /* --- صندوق الشرح والمعلومات --- */
+        .info-box {
+            background-color: rgba(122, 162, 247, 0.1);
+            border-left: 4px solid var(--accent-color);
+            padding: 1rem 1.5rem;
+            margin-bottom: 2rem;
+            border-radius: 4px;
+        }
+        .info-box ol {
+            padding-right: 20px;
+        }
+
+        .warning-text {
+            color: var(--orange-color);
+            font-weight: bold;
+            background-color: rgba(255, 158, 100, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+        }
+
+        /* --- Gemini AI Generator --- */
+        .ai-generator {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .ai-input {
+            width: 100%;
+            background-color: var(--header-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            color: var(--main-color);
+            font-family: 'Tajawal', sans-serif;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        
+        #generate-btn {
+            padding: 0.75rem;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(45deg, var(--pink-color), var(--accent-color));
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        #generate-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(122, 162, 247, 0.5);
+        }
+        #loader {
+            display: none;
+            width: 28px;
+            height: 28px;
+            border: 4px solid var(--main-color);
+            border-bottom-color: var(--accent-color);
+            border-radius: 50%;
+            margin: 0.5rem auto;
+            animation: rotation 1s linear infinite;
+        }
+        @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>لوحة تحكم أوامر التنزيل الذكية</h1>
+
+        <div class="tabs">
+            <button class="tab-button active" data-tab="local">🖥️ الأوامر المحلية (على جهازك)</button>
+            <button class="tab-button" data-tab="cloud">☁️ الأوامر السحابية (على Google Colab)</button>
+        </div>
+
+        <!-- ======================= -->
+        <!--  محتوى الأوامر المحلية   -->
+        <!-- ======================= -->
+        <div id="local" class="tab-content active">
+            <h2>🎬 أوامر تنزيل الفيديو</h2>
+            <div class="code-block">
+                <div class="code-block-header">1. الأمر الذهبي (لأفضل جودة بصيغة MP4)</div>
+                <button class="copy-btn">نسخ</button>
+                <pre><code>yt-dlp -f bestvideo+bestaudio --recode-video mp4 --embed-thumbnail -o "D:\Videos\%(title)s.%(ext)s" "ضع_الرابط_هنا"</code></pre>
+            </div>
+            <div class="code-block">
+                <div class="code-block-header">2. أمر أفضل جودة (بغض النظر عن الصيغة)</div>
+                <button class="copy-btn">نسخ</button>
+                <pre><code>yt-dlp -f bestvideo+bestaudio -o "D:\Videos\%(title)s.%(ext)s" "ضع_الرابط_هنا"</code></pre>
+            </div>
+            <div class="code-block">
+                <div class="code-block-header">3. أمر جودة مخصصة (720p كمثال)</div>
+                <button class="copy-btn">نسخ</button>
+                <pre><code>yt-dlp -f "bestvideo[height<=720]+bestaudio" --recode-video mp4 --embed-thumbnail -o "D:\Videos\%(title)s - 720p.%(ext)s" "ضع_الرابط_هنا"</code></pre>
+            </div>
+
+            <h2>💬 أمر الترجمة</h2>
+            <div class="code-block">
+                <div class="code-block-header">تنزيل الفيديو مع دمج الترجمة العربية المترجمة آليًا</div>
+                <button class="copy-btn">نسخ</button>
+                <pre><code>yt-dlp -f bestvideo+bestaudio --recode-video mp4 --embed-subs --write-auto-sub --sub-lang ar -o "D:\Videos\%(title)s.%(ext)s" "ضع_الرابط_هنا"</code></pre>
+            </div>
+
+            <h2>🎧 أمر الصوت</h2>
+            <div class="code-block">
+                <div class="code-block-header">تحويل أي فيديو إلى ملف صوتي بصيغة MP3</div>
+                <button class="copy-btn">نسخ</button>
+                <pre><code>yt-dlp -x --audio-format mp3 --embed-thumbnail -o "D:\Videos\%(title)s.%(ext)s" "ضع_الرابط_هنا"</code></pre>
+            </div>
+
+            <h2>🔒 تنزيل من المواقع الخاصة (باستخدام الكوكيز)</h2>
+            <div class="info-box">
+                <p>لتنزيل الفيديوهات التي تتطلب تسجيل دخول (مثل انستجرام، فيسبوك، أو المواقع التعليمية):</p>
+                <ol>
+                    <li>ثبّت إضافة <a href="https://chrome.google.com/webstore/detail/cookie-editor/hlkenndednhfkekhgcdicdfddnkalmdm" target="_blank">"Cookie-Editor"</a> على متصفحك.</li>
+                    <li>اذهب للموقع وسجل دخولك.</li>
+                    <li>اضغط على أيقونة الإضافة واختر "Export" ثم "Export as JSON".</li>
+                    <li>سيتم نسخ الكود إلى حافظتك. قم بإنشاء ملف نصي جديد، الصق الكود بداخله، ثم احفظه باسم `cookies.txt` في نفس مجلد `yt-dlp`.</li>
+                    <li>استخدم الأمر التالي:</li>
+                </ol>
+                <p class="warning-text">⚠️ تحذير: ملف الكوكيز يحتوي على معلومات تسجيل دخولك. قم بحذفه بعد الانتهاء للحفاظ على أمان حسابك.</p>
+            </div>
+            <div class="code-block">
+                <div class="code-block-header">أمر التنزيل باستخدام الكوكيز</div>
+                <button class="copy-btn">نسخ</button>
+                <pre><code>yt-dlp --cookies "cookies.txt" -o "D:\Videos\%(title)s.%(ext)s" "ضع_الرابط_هنا"</code></pre>
+            </div>
+
+             <h2>🛠️ أوامر التشخيص وحل المشاكل</h2>
+            <div class="code-block">
+                <div class="code-block-header">فحص الترجمات المتاحة (قبل التنزيل)</div>
+                <button class="copy-btn">نسخ</button>
+                <pre><code>yt-dlp --list-subs "ضع_الرابط_هنا"</code></pre>
+            </div>
+             <div class="code-block">
+                <div class="code-block-header">تحديث yt-dlp (أول خطوة عند حدوث أي خطأ)</div>
+                <button class="copy-btn">نسخ</button>
+                <pre><code>yt-dlp -U</code></pre>
+            </div>
+        </div>
+
+        <!-- ======================= -->
+        <!--  محتوى الأوامر السحابية  -->
+        <!-- ======================= -->
+        <div id="cloud" class="tab-content">
+            <h2>✨ مولد الأوامر السحابي الذكي</h2>
+             <div class="ai-generator">
+                <input type="text" id="ai-path" class="ai-input" placeholder="اكتب مسار الحفظ في Google Drive هنا (مثال: Courses/Module1)">
+                <input type="url" id="ai-url" class="ai-input" placeholder="الصق رابط الفيديو هنا">
+                <button id="generate-btn">أنشئ الأمر</button>
+                <div id="loader"></div>
+                <div id="ai-result-container" style="display: none;">
+                    <div class="code-block">
+                        <div class="code-block-header">الأمر جاهز للنسخ</div>
+                        <button class="copy-btn">نسخ</button>
+                        <pre><code id="ai-result-code"></code></pre>
+                    </div>
+                </div>
+            </div>
+
+             <h2>📋 الأوامر الأساسية الجاهزة</h2>
+              <div class="code-block">
+                <div class="code-block-header">1. توصيل حساب Google Drive (تُنفذ مرة واحدة)</div>
+                <button class="copy-btn">نسخ</button>
+                <pre><code>from google.colab import drive
+drive.mount('/content/drive')</code></pre>
+            </div>
+             <div class="code-block">
+                <div class="code-block-header">2. تثبيت/تحديث أداة yt-dlp (تُنفذ مرة واحدة)</div>
+                <button class="copy-btn">نسخ</button>
+                <pre><code>!pip install --upgrade yt-dlp</code></pre>
+            </div>
+              <div class="code-block">
+                <div class="code-block-header">3. الأمر الذهبي (لأفضل جودة بصيغة MP4)</div>
+                <button class="copy-btn">نسخ</button>
+                <pre><code>!yt-dlp -f bestvideo+bestaudio --recode-video mp4 --embed-thumbnail -o "/content/drive/MyDrive/MyVideos/%(title)s.%(ext)s" "ضع_الرابط_هنا"</code></pre>
+            </div>
+             <div class="code-block">
+                <div class="code-block-header">4. أمر أفضل جودة (بغض النظر عن الصيغة)</div>
+                <button class="copy-btn">نسخ</button>
+                <pre><code>!yt-dlp -f bestvideo+bestaudio -o "/content/drive/MyDrive/MyVideos/%(title)s.%(ext)s" "ضع_الرابط_هنا"</code></pre>
+            </div>
+             <div class="code-block">
+                <div class="code-block-header">5. أمر الترجمة (فيديو مع ترجمة عربية)</div>
+                <button class="copy-btn">نسخ</button>
+                <pre><code>!yt-dlp -f bestvideo+bestaudio --recode-video mp4 --embed-subs --write-auto-sub --sub-lang ar -o "/content/drive/MyDrive/MyVideos/%(title)s.%(ext)s" "ضع_الرابط_هنا"</code></pre>
+            </div>
+             <div class="code-block">
+                <div class="code-block-header">6. أمر الصوت (للملفات الصوتية MP3)</div>
+                <button class="copy-btn">نسخ</button>
+                <pre><code>!yt-dlp -x --audio-format mp3 --embed-thumbnail -o "/content/drive/MyDrive/MyVideos/%(title)s.%(ext)s" "ضع_الرابط_هنا"</code></pre>
+            </div>
+
+            <h2>🔒 تنزيل من المواقع الخاصة (باستخدام الكوكيز)</h2>
+             <div class="info-box">
+                <p>لتنزيل الفيديوهات التي تتطلب تسجيل دخول مباشرة إلى Google Drive:</p>
+                <ol>
+                    <li>صدّر الكود من متصفحك (بنفس الطريقة المحلية).</li>
+                    <li>قم بإنشاء ملف نصي جديد، الصق الكود، واحفظه باسم `my-cookies.txt`.</li>
+                    <li>في Google Colab، اضغط على أيقونة المجلد 📁 ثم أيقونة الرفع 📤 لرفع ملف `my-cookies.txt`.</li>
+                    <li>استخدم الأمر التالي:</li>
+                </ol>
+                <p class="warning-text">⚠️ تحذير: ملف الكوكيز يحتوي على معلومات تسجيل دخولك. قم بحذفه من جهازك ومن بيئة Colab بعد الانتهاء.</p>
+            </div>
+             <div class="code-block">
+                <div class="code-block-header">أمر التنزيل السحابي باستخدام الكوكيز</div>
+                <button class="copy-btn">نسخ</button>
+                <pre><code>!yt-dlp --cookies "/content/my-cookies.txt" -o "/content/drive/MyDrive/MyVideos/%(title)s.%(ext)s" "ضع_الرابط_هنا"</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- وظيفة التبديل بين التبويبات ---
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                tabContents.forEach(content => {
+                    content.classList.remove('active');
+                    if (content.id === button.dataset.tab) {
+                        content.classList.add('active');
+                    }
+                });
+            });
+        });
+
+        // --- وظيفة زر النسخ ---
+        function attachCopyListeners() {
+            document.querySelectorAll('.copy-btn').forEach(button => {
+                if (button.dataset.listenerAttached) return;
+                button.addEventListener('click', event => {
+                    const codeElement = event.target.closest('.code-block').querySelector('code');
+                    const textToCopy = codeElement.innerText;
+                    const textArea = document.createElement("textarea");
+                    textArea.value = textToCopy;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    try {
+                        document.execCommand('copy');
+                        button.textContent = '✅ تم النسخ!';
+                        button.classList.add('copied');
+                    } catch (err) {
+                        button.textContent = 'فشل النسخ';
+                    }
+                    document.body.removeChild(textArea);
+                    setTimeout(() => {
+                        button.textContent = 'نسخ';
+                        button.classList.remove('copied');
+                    }, 2000);
+                });
+                button.dataset.listenerAttached = 'true';
+            });
+        }
+        
+        document.addEventListener('DOMContentLoaded', attachCopyListeners);
+
+        // --- Gemini API Logic for Cloud Command Generator ---
+        const generateBtn = document.getElementById('generate-btn');
+        const pathInput = document.getElementById('ai-path');
+        const urlInput = document.getElementById('ai-url');
+        const resultContainer = document.getElementById('ai-result-container');
+        const resultCodeElement = document.getElementById('ai-result-code');
+        const loader = document.getElementById('loader');
+
+        const systemPrompt = `You are a command generator. Your task is to construct a complete yt-dlp command for Google Colab based on a user-provided folder path and URL.
+        - The base template is: !yt-dlp -f bestvideo+bestaudio --recode-video mp4 --embed-thumbnail -o "/content/drive/MyDrive/{FOLDER_PATH}/%(title)s.%(ext)s" "{URL}"
+        - Replace {FOLDER_PATH} with the user's path. If the user path is empty, omit it and the following slash.
+        - Replace {URL} with the user's URL.
+        - Only output the final command, nothing else.`;
+
+        async function generateCloudCommand() {
+            const folderPath = pathInput.value.trim();
+            const url = urlInput.value.trim();
+            if (!url) {
+                alert('الرجاء لصق رابط الفيديو.');
+                return;
+            }
+
+            loader.style.display = 'block';
+            resultContainer.style.display = 'none';
+            generateBtn.disabled = true;
+
+            const userQuery = `Folder Path: "${folderPath}", URL: "${url}"`;
+
+            const apiKey = ""; 
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+            };
+            
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                
+                const result = await response.json();
+                const candidate = result.candidates?.[0];
+
+                if (candidate && candidate.content?.parts?.[0]?.text) {
+                    resultCodeElement.textContent = candidate.content.parts[0].text.trim();
+                    resultContainer.style.display = 'block';
+                    attachCopyListeners(); 
+                } else {
+                    throw new Error("No valid response from API.");
+                }
+
+            } catch (error) {
+                console.error("Error calling Gemini API:", error);
+                resultCodeElement.textContent = `فشل إنشاء الأمر: ${error.message}`;
+                resultContainer.style.display = 'block';
+            } finally {
+                loader.style.display = 'none';
+                generateBtn.disabled = false;
+            }
+        }
+
+        generateBtn.addEventListener('click', generateCloudCommand);
+
+    </script>
+</body>
+</html>
+
